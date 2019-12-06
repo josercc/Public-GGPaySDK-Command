@@ -1,2 +1,3 @@
-# Public-GGPaySDK-Command
-发布原生支付脚本
+# Public-GGPaySDK
+
+发布原生支付的脚本
