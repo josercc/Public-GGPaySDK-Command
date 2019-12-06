@@ -100,7 +100,7 @@ struct Public {
         resultPodSpec = resultPodSpec.replacingCharacters(in: result.range, with: versionString) as NSString
         try resultPodSpec.write(toFile: podspecToPath, atomically: true, encoding: String.Encoding.utf8.rawValue)
         
-        try runAndPrint("/usr/local/bin/pod", "repo", "push", "GGRepos", "--verbose", "--use-libraries", "--allow-warnings", "--sources=\"\(self.reposURL),https://cdn.cocoapods.org/\"")
+//        try runAndPrint("/usr/local/bin/pod", "repo", "push", "GGRepos", "--verbose", "--use-libraries", "--allow-warnings", "--sources=\"\(self.reposURL),https://cdn.cocoapods.org/\"")
 
     }
     
