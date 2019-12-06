@@ -8,5 +8,3 @@ build-for-linux:
 install: build
 	mkdir -p "$(PREFIX)/bin"
 	cp -f ".build/release/Public-GGPaySDK" "$(PREFIX)/bin/PGG"
-run:
-.build/release/$(PROD_NAME)
