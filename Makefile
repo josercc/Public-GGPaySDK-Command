@@ -1,10 +1,24 @@
-PREFIX?=/usr/local
-PROD_NAME=PGG
+prefix ?= /usr/local
+bindir = $(prefix)/bin
+libdir = $(prefix)/lib
 
 build:
-	swift build --disable-sandbox -c release -Xswiftc -static-stdlib
-build-for-linux:
-	swift build --disable-sandbox -c release
+	swift build -c release --disable-sandbox
+
 install: build
-	mkdir -p "$(PREFIX)/bin"
-	cp -f ".build/release/Public-GGPaySDK" "$(PREFIX)/bin/PGG"
+	install ".build/release/Public-GGPaySDK" "$(bindir)"
+	install ".build/release/libswiftCore.dylib" "$(libdir)"
+	install_name_tool -change \
+		".build/release/libswiftCore.dylib" \
+		"$(libdir)/libswiftCore.dylib" \
+		"$(bindir)/Public-GGPaySDK"
+
+uninstall:
+	rm -rf "$(bindir)/Public-GGPaySDK"
+	rm -rf "$(libdir)/libswiftCore.dylib"
+
+clean:
+	rm -rf .build
+
+.PHONY: build install uninstall clean
+
