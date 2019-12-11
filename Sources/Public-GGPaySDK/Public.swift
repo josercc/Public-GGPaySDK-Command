@@ -78,12 +78,6 @@ struct Public {
         dic.setValue(self.version, forKey: "CFBundleShortVersionString")
         dic.write(toFile: infoPlistPath, atomically: true)
         
-        try runAndPrint("git", "add", ".")
-        try runAndPrint("git", "commit", "-m", "public \(self.version)")
-        try runAndPrint("git", "push", "origin", "-f")
-        try runAndPrint("git", "tag", "\(self.version)")
-        try runAndPrint("git", "push", "origin", "--tag")
-        
         let podspecMovePath = "\(SDKLibPath)/GGPaySDK.podspec"
         let podspecToPath = "\(SDKPath)/GGPaySDK.podspec"
         try moveFile(movePath: podspecMovePath, toPath: podspecToPath)
@@ -100,6 +94,13 @@ struct Public {
         resultPodSpec = resultPodSpec.replacingCharacters(in: result.range, with: versionString) as NSString
         try resultPodSpec.write(toFile: podspecToPath, atomically: true, encoding: String.Encoding.utf8.rawValue)
         
+        try runAndPrint("git", "add", ".")
+        try runAndPrint("git", "commit", "-m", "public \(self.version)")
+        try runAndPrint("git", "push", "origin", "-f")
+        try runAndPrint("git", "tag", "\(self.version)")
+        try runAndPrint("git", "push", "origin", "--tag")
+        
+
 //        try runAndPrint("/usr/local/bin/pod", "repo", "push", "GGRepos", "--verbose", "--use-libraries", "--allow-warnings", "--sources=\"\(self.reposURL),https://cdn.cocoapods.org/\"")
 
     }
