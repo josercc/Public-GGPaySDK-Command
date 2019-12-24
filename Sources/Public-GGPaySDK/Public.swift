@@ -15,6 +15,7 @@ struct Public {
     let sourceURL:String
     let sdkURL:String
     let reposURL:String
+    var isSource:String = "0"
     func publicVersion() throws {
         // 获取用户的路径
         guard let user = CustomContext(main).env["USER"] else {
@@ -43,10 +44,12 @@ struct Public {
         let developerPath = "\(SDKLibPath)/GGPaySDK-developer"
         main.currentdirectory = developerPath
         let carthagePath = "\(developerPath)/Carthage"
-        if FileManager.default.fileExists(atPath: carthagePath) {
-            try FileManager.default.removeItem(atPath: carthagePath)
+        if self.isSource == "0" {
+            if FileManager.default.fileExists(atPath: carthagePath) {
+                try FileManager.default.removeItem(atPath: carthagePath)
+            }
+            try runAndPrint("carthage", "build", "--no-skip-current", "--verbose")
         }
-        try runAndPrint("carthage", "build", "--no-skip-current", "--verbose")
         let SDKPath = "\(sourcePath)/GGPaySDK"
         if !FileManager.default.fileExists(atPath: SDKPath) {
             main.currentdirectory = sourcePath
@@ -57,13 +60,19 @@ struct Public {
             try runAndPrint("git", "pull", "origin")
         }
         main.currentdirectory = SDKPath
-        let sdkBuildPath = "\(carthagePath)/Build/iOS/GGPaySDK.framework"
-        let frameworkPath = "\(SDKPath)/Frameworks"
-        if !FileManager.default.fileExists(atPath: frameworkPath) {
-            try FileManager.default.createDirectory(atPath: frameworkPath, withIntermediateDirectories: true, attributes: nil)
+        if self.isSource == "0" {
+            let sdkBuildPath = "\(carthagePath)/Build/iOS/GGPaySDK.framework"
+            let frameworkPath = "\(SDKPath)/Frameworks"
+            if !FileManager.default.fileExists(atPath: frameworkPath) {
+                try FileManager.default.createDirectory(atPath: frameworkPath, withIntermediateDirectories: true, attributes: nil)
+            }
+            let copySDKPath = "\(frameworkPath)/GGPaySDK.framework"
+            try moveFile(movePath: sdkBuildPath, toPath: copySDKPath)
+        } else {
+            let sourceFrom = "\(SDKLibPath)/GGPaySDK-developer"
+            let sourceTo = "\(SDKPath)/GGPaySDK-developer"
+            try moveFile(movePath: sourceFrom, toPath: sourceTo)
         }
-        let copySDKPath = "\(frameworkPath)/GGPaySDK.framework"
-        try moveFile(movePath: sdkBuildPath, toPath: copySDKPath)
         
         let bundlePath = "\(SDKLibPath)/GGPaySDK.bundle"
         let copyBundlePath = "\(SDKPath)/GGPaySDK.bundle"
@@ -78,7 +87,12 @@ struct Public {
         dic.setValue(self.version, forKey: "CFBundleShortVersionString")
         dic.write(toFile: infoPlistPath, atomically: true)
         
-        let podspecMovePath = "\(SDKLibPath)/GGPaySDK.podspec"
+        let podspecMovePath:String
+        if self.isSource == "0" {
+            podspecMovePath = "\(SDKLibPath)/GGPaySDK_Framework.podspec"
+        } else {
+             podspecMovePath = "\(SDKLibPath)/GGPaySDK.podspec"
+        }
         let podspecToPath = "\(SDKPath)/GGPaySDK.podspec"
         try moveFile(movePath: podspecMovePath, toPath: podspecToPath)
         
