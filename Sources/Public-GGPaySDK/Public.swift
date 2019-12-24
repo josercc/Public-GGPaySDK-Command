@@ -112,6 +112,7 @@ struct Public {
         try runAndPrint("git", "commit", "-m", "public \(self.version)")
         try runAndPrint("git", "push", "origin", "-f")
         try runAndPrint("git", "tag", "\(self.version)")
+        try runAndPrint("git", "pull", "--tag", "-f")
         try runAndPrint("git", "push", "origin", "--tag")
         
 
