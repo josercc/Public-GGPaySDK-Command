@@ -122,7 +122,7 @@ struct Public {
     
     func moveFile(movePath:String, toPath:String) throws {
         if FileManager.default.fileExists(atPath: toPath) {
-            try FileManager.default.removeItem(atPath: toPath)
+//            try FileManager.default.removeItem(atPath: toPath)
         }
         try FileManager.default.copyItem(atPath: movePath, toPath: toPath)
     }
